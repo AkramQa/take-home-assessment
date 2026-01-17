@@ -15,17 +15,25 @@ dependencies:
   
   # HTTP
   http: ^1.1.0
+  web_socket_channel: ^3.0.3
+  
+  # Navigation
+  auto_route: ^7.3.2
   
   # UI
   cupertino_icons: ^1.0.6
+  shimmer: ^3.0.0
   
   # Utilities
   intl: ^0.18.1
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  auto_route_generator: ^7.3.2
+  build_runner: ^2.4.7
 
 flutter:
   uses-material-design: true
