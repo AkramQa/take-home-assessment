@@ -334,6 +334,8 @@ class _MarketDataListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final marketData = this.marketData;
+
     // Format price as currency
     final priceFormatter = NumberFormat.currency(
       symbol: '\$',
@@ -415,7 +417,7 @@ class _MarketDataListItem extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 AnimatedRotation(
-                  turns: 0.25, // 90 degrees
+                  turns: 0.25,
                   duration: const Duration(milliseconds: 200),
                   child: const Icon(
                     Icons.chevron_right,

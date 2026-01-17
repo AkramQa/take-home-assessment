@@ -32,12 +32,39 @@ class MarketData {
   });
 
   factory MarketData.fromJson(Map<String, dynamic> json) {
+    // Helper function to safely parse numeric values (handles both String and num)
+    double parseNumeric(dynamic value) {
+      if (value == null) return 0.0;
+      if (value is num) return value.toDouble();
+      if (value is String) {
+        return double.tryParse(value) ?? 0.0;
+      }
+      return 0.0;
+    }
+
+    final symbol = json['symbol'] as String? ?? '';
+    final price = parseNumeric(json['price']);
+    final change24h = parseNumeric(json['change24h']);
+    final volume = parseNumeric(json['volume']);
+    
+    // Calculate changePercent24h if not provided (from price and change24h)
+    double changePercent24h;
+    if (json['changePercent24h'] != null) {
+      changePercent24h = parseNumeric(json['changePercent24h']);
+    } else if (price > 0 && change24h != 0) {
+      // Calculate percentage: (change24h / (price - change24h)) * 100
+      final previousPrice = price - change24h;
+      changePercent24h = previousPrice > 0 ? (change24h / previousPrice) * 100 : 0.0;
+    } else {
+      changePercent24h = 0.0;
+    }
+
     return MarketData(
-      symbol: json['symbol'] as String,
-      price: (json['price'] as num).toDouble(),
-      change24h: (json['change24h'] as num).toDouble(),
-      changePercent24h: (json['changePercent24h'] as num).toDouble(),
-      volume: (json['volume'] as num).toDouble(),
+      symbol: symbol,
+      price: price,
+      change24h: change24h,
+      changePercent24h: changePercent24h,
+      volume: volume,
     );
   }
 }

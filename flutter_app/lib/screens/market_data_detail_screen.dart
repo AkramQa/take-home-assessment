@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../core/theme/app_colors.dart';
+import '../providers/market_data_provider.dart';
 import '../models/market_data_model.dart';
 
-class MarketDataDetailScreen extends StatelessWidget {
+class MarketDataDetailScreen extends StatefulWidget {
   final MarketData marketData;
 
   const MarketDataDetailScreen({
@@ -12,7 +15,60 @@ class MarketDataDetailScreen extends StatelessWidget {
   });
 
   @override
+  State<MarketDataDetailScreen> createState() => _MarketDataDetailScreenState();
+}
+
+class _MarketDataDetailScreenState extends State<MarketDataDetailScreen> {
+  MarketData? _currentMarketData;
+  StreamSubscription? _providerSubscription;
+  MarketDataProvider? _provider;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    
+    // Save provider reference when dependencies change (safe to access context here)
+    if (_provider == null) {
+      _provider = Provider.of<MarketDataProvider>(context, listen: false);
+      _currentMarketData = widget.marketData;
+      
+      // Get initial data from provider if available
+      final providerData = _provider!.getMarketDataBySymbol(widget.marketData.symbol);
+      if (providerData != null) {
+        _currentMarketData = providerData;
+      }
+      
+      // Listen to provider changes
+      _provider!.addListener(_onProviderUpdate);
+    }
+  }
+
+  void _onProviderUpdate() {
+    if (_provider == null || !mounted) return;
+    
+    final updatedData = _provider!.getMarketDataBySymbol(widget.marketData.symbol);
+    
+    if (updatedData != null && updatedData != _currentMarketData) {
+      if (mounted) {
+        setState(() {
+          _currentMarketData = updatedData;
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    // Use saved provider reference instead of accessing context
+    _provider?.removeListener(_onProviderUpdate);
+    _providerSubscription?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final marketData = _currentMarketData ?? widget.marketData;
+    
     final priceFormatter = NumberFormat.currency(
       symbol: '\$',
       decimalDigits: 2,
@@ -31,6 +87,12 @@ class MarketDataDetailScreen extends StatelessWidget {
         ? appColors.positiveColor
         : appColors.negativeColor;
     
+    // Format 24h change with sign
+    final changeSign = isPositive ? '+' : '';
+    final formattedChange = '$changeSign${marketData.change24h.toStringAsFixed(2)}';
+    final formattedChangePercent =
+        '$changeSign${marketData.changePercent24h.toStringAsFixed(2)}%';
+    
     // Animation controller for entrance animation
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
@@ -47,30 +109,29 @@ class MarketDataDetailScreen extends StatelessWidget {
       },
       child: _buildContent(
         context,
+        marketData,
         formattedPrice,
         formattedVolume,
         appColors,
         changeColor,
         isPositive,
+        formattedChange,
+        formattedChangePercent,
       ),
     );
   }
   
   Widget _buildContent(
     BuildContext context,
+    MarketData marketData,
     String formattedPrice,
     String formattedVolume,
     appColors,
     Color changeColor,
     bool isPositive,
+    String formattedChange,
+    String formattedChangePercent,
   ) {
-
-    // Format 24h change with sign
-    final changeSign = isPositive ? '+' : '';
-    final formattedChange = '$changeSign${marketData.change24h.toStringAsFixed(2)}';
-    final formattedChangePercent =
-        '$changeSign${marketData.changePercent24h.toStringAsFixed(2)}%';
-
     return Scaffold(
       appBar: AppBar(
         title: Text(marketData.symbol),
