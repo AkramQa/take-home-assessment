@@ -31,3 +31,6 @@ lib/
 ## Assessment Requirements
 
 See `ASSESSMENT.md` for detailed requirements.
+
+## Demo Video
+Watch the app in action here: [Market Data Demo](https://drive.google.com/file/d/1rFBgtEe8EjwmNPbGnq1B4zoq5tVbUPra/view?usp=sharing)
