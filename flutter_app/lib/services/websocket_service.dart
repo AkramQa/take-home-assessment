@@ -115,8 +115,6 @@ class WebSocketService {
 
     _reconnectTimer?.cancel();
     _connectionState = WebSocketConnectionState.reconnecting;
-
-    // Exponential backoff: 1s, 2s, 4s, 8s, 16s, 30s (max)
     final delay = Duration(
       milliseconds: (_initialReconnectDelay.inMilliseconds *
               (1 << _reconnectAttempts.clamp(0, 4)))

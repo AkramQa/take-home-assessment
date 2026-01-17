@@ -7,20 +7,8 @@ import '../models/market_data_model.dart';
 
 class ApiService {
   static const String baseUrl = AppConstants.baseUrl;
-  static const Duration _timeout = Duration(seconds: 30);
 
-  // TODO: Implement getMarketData() method
-  // This should call GET /api/market-data and return the response
-  // Example:
-  // Future<List<Map<String, dynamic>>> getMarketData() async {
-  //   final response = await http.get(Uri.parse('$baseUrl/market-data'));
-  //   if (response.statusCode == 200) {
-  //     final jsonData = json.decode(response.body);
-  //     return List<Map<String, dynamic>>.from(jsonData['data']);
-  //   } else {
-  //     throw Exception('Failed to load market data: ${response.statusCode}');
-  //   }
-  // }
+  static const Duration _timeout = Duration(seconds: 30);
 
   Future<List<MarketData>> getMarketData() async {
     final uri = Uri.parse('$baseUrl${AppConstants.marketDataEndpoint}');

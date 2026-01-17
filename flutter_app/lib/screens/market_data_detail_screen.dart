@@ -27,18 +27,13 @@ class _MarketDataDetailScreenState extends State<MarketDataDetailScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     
-    // Save provider reference when dependencies change (safe to access context here)
     if (_provider == null) {
       _provider = Provider.of<MarketDataProvider>(context, listen: false);
       _currentMarketData = widget.marketData;
-      
-      // Get initial data from provider if available
       final providerData = _provider!.getMarketDataBySymbol(widget.marketData.symbol);
       if (providerData != null) {
         _currentMarketData = providerData;
       }
-      
-      // Listen to provider changes
       _provider!.addListener(_onProviderUpdate);
     }
   }
@@ -306,7 +301,6 @@ class _MarketDataDetailScreenState extends State<MarketDataDetailScreen> {
   }
 }
 
-// Helper widget for detail rows
 class _DetailRow extends StatelessWidget {
   final String label;
   final String value;
